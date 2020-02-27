@@ -1,18 +1,24 @@
-import java.util.ArrayList;
+import java.util.HashSet;
 
-public class alphabet {
-	private ArrayList<String> alpha = new ArrayList<String>();// tableau de lettre de X
+public class Alphabet {
+	private HashSet<String> alpha = new HashSet<String>();// tableau de lettre de X
 	
-	public alphabet(ArrayList<String> alpha)
+	public Alphabet(HashSet<String> alpha)
 	{
 		this.alpha=alpha;
 	}
-public void setalpha(ArrayList<String> alpha)
-{
+	public void setalpha(HashSet<String> alpha)
+	{
 	this.alpha=alpha;
-}
-public ArrayList<String> getalpha()
-{
-	return alpha;
-}
+	}
+	public HashSet<String> getalpha()
+	{
+		return alpha;
+	}
+	@Override
+	public String toString() {
+		return "Alphabet [" + alpha + "]";
+	}
+
+	
 }

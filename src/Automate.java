@@ -1,19 +1,33 @@
 import java.util.ArrayList;
-public class Automate {
-   private alphabet X;
-   private ArrayList<Etats> S = new ArrayList<Etats>();
-   private Etats So;// c'est un "o" pas 0
-   private ArrayList<Etats> Sf = new ArrayList<Etats>();
-   private ArrayList<instruction> I = new ArrayList<instruction>();
-   // constructeur 
-   public Automate(alphabet X,ArrayList<Etats> S,Etats So, ArrayList<Etats> Sf,ArrayList<instruction> I )
-   {
-	   this.X=X;
-	   this.I=I;
-	   this.Sf=Sf;
-	   this.So=So;
-	   this.S=S;
-	   
-   }
+import java.util.HashSet;
+
+public abstract class  Automate {
+	
+   private Alphabet X;
+   private int etatInit;
+   private HashSet<Integer> etatFin = new HashSet<Integer>();
+   
+   
+	public Alphabet getX() {
+		return X;
+	}
+	public void setX(Alphabet x) {
+		X = x;
+	}
+	public int getEtatInit() {
+		return etatInit;
+	}
+	public void setEtatInit(int etatInit) {
+		this.etatInit = etatInit;
+	}
+	public HashSet<Integer> getEtatFin() {
+		return etatFin;
+	}
+	public void setEtatFin(HashSet<Integer> etatFin) {
+		this.etatFin = etatFin;
+	}
+
+    
+   
    
 }
