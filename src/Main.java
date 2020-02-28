@@ -62,6 +62,8 @@ public class Main {
 		
 		Automate_simple A = new Automate_simple(X, transitions, etInit, etatFin);
 		A.afficher();
+		Automate_simple B = A.reduire();
+		B.afficher();
 	}
 	
 

@@ -15,13 +15,79 @@ public class Automate_simple extends Automate {
 		   super.setEtatInit(etatInit);
 		   super.setEtatFin(etatFin);
 	}
-	
-/*	public Automate_simple reduire()
-	{
-		return;
-		
+
+	private HashSet<Integer> etatSuivant(int etat) { // Retourne les etats successeur d'un etat donné
+		HashSet<Integer> set = new HashSet<Integer>();
+		Iterator<Transition> it = transitions.get(etat).iterator();
+		while(it.hasNext()) {
+			set.add(it.next().getEtatSuivant());
+		}
+		return set;
 	}
-public Automate_simple deterministe()
+	
+	private boolean accessible (int etat) {
+		if(etat == super.getEtatInit()) return true;
+		else {
+			Iterator<Transition> it;
+			boolean res = false;
+			for(Map.Entry entry : this.transitions.entrySet()) {
+				it = ((HashSet<Transition>) entry.getValue()).iterator();
+				boolean arret = false;
+				while(it.hasNext() && !arret) {
+					if(it.next().getEtatSuivant() == etat && (int)entry.getKey()!=etat) {
+						arret = true;
+						res = res || accessible((int)entry.getKey());
+					}
+				}
+			}
+		return res;
+		}
+	}
+	
+	private boolean coaccessible(int etat) {
+		if(super.getEtatFin().contains(etat)) return true;
+		else {
+			boolean res = false;
+			if(transitions.containsKey(etat)) {
+				Iterator<Transition> it;
+				int suiv;
+					it = ((HashSet<Transition>) transitions.get(etat)).iterator();
+					while(it.hasNext() && !res) {
+						suiv = it.next().getEtatSuivant();
+						if(suiv != etat) res = res || coaccessible(suiv);
+					}				
+			}
+			
+			return res;
+		}
+	}
+	
+	public Automate_simple reduire()
+	{
+		HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
+
+		 if(coaccessible(super.getEtatInit())) {
+			int etat, suiv;
+			Iterator<Transition> it;
+			Transition t;
+			nvTrans = transitions;
+			for(Map.Entry entry : transitions.entrySet()) {
+				etat = (int) entry.getKey();
+				if(!accessible(etat) || !coaccessible(etat)) nvTrans.remove(etat);
+				else {
+					it = ((HashSet<Transition>) transitions.get(etat)).iterator();
+					while(it.hasNext()) {
+						t = it.next();
+						suiv = t.getEtatSuivant();
+						if(!accessible(suiv) || !coaccessible(suiv)) ((HashSet<Transition>)nvTrans.get(etat)).remove(t);
+					}
+				}
+			}			
+
+		}
+		return new Automate_simple(super.getX(), nvTrans, super.getEtatInit(), super.getEtatFin());
+	}
+/*public Automate_simple deterministe()
 {
 
 	
@@ -69,7 +135,5 @@ public boolean reconnaissance(Automate_simple A,mots mot)
 
 		}
 	}
-
-
 
 }
