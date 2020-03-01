@@ -8,12 +8,13 @@ public class Automate_simple extends Automate {
 	
 	private HashMap<Integer, HashSet<Transition>> transitions = new HashMap<Integer, HashSet<Transition>>();
 
-	public Automate_simple(Alphabet X,HashMap<Integer, HashSet<Transition>> transitions , int etatInit, HashSet<Integer> etatFin)
+	public Automate_simple(Alphabet X,HashSet<Integer> etats, HashMap<Integer, HashSet<Transition>> transitions , int etatInit, HashSet<Integer> etatFin)
 	{
 		   super.setX(X);
 		   this.transitions = transitions;
 		   super.setEtatInit(etatInit);
 		   super.setEtatFin(etatFin);
+		   super.setEtats(etats);
 	}
 
 	private HashSet<Integer> etatSuivant(int etat) { // Retourne les etats successeur d'un etat donné
@@ -65,27 +66,35 @@ public class Automate_simple extends Automate {
 	public Automate_simple reduire()
 	{
 		HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
-
+		HashSet<Integer> nvEtats = new HashSet<Integer> ();
+		nvEtats.addAll(super.getEtats());
 		 if(coaccessible(super.getEtatInit())) {
 			int etat, suiv;
 			Iterator<Transition> it;
 			Transition t;
-			nvTrans = transitions;
-			for(Map.Entry entry : transitions.entrySet()) {
+			nvTrans.putAll(transitions);
+			for(Map.Entry<Integer, HashSet<Transition>> entry : transitions.entrySet()) {
 				etat = (int) entry.getKey();
-				if(!accessible(etat) || !coaccessible(etat)) nvTrans.remove(etat);
+				if(!accessible(etat) || !coaccessible(etat)) {
+					nvTrans.remove(etat);
+					if(nvEtats.contains(etat)) nvEtats.remove(etat);
+				}
 				else {
 					it = ((HashSet<Transition>) transitions.get(etat)).iterator();
 					while(it.hasNext()) {
 						t = it.next();
 						suiv = t.getEtatSuivant();
-						if(!accessible(suiv) || !coaccessible(suiv)) ((HashSet<Transition>)nvTrans.get(etat)).remove(t);
+						if(!accessible(suiv) || !coaccessible(suiv)) {
+							((HashSet<Transition>)nvTrans.get(etat)).remove(t);
+							if(nvEtats.contains(suiv)) nvEtats.remove(suiv);
+						}
 					}
 				}
 			}			
 
 		}
-		return new Automate_simple(super.getX(), nvTrans, super.getEtatInit(), super.getEtatFin());
+		 //Modification des etats finaux...
+		return new Automate_simple(super.getX(), nvEtats, nvTrans, super.getEtatInit(), super.getEtatFin());
 	}
 /*public Automate_simple deterministe()
 {
@@ -121,6 +130,7 @@ public boolean reconnaissance(Automate_simple A,mots mot)
 	public void afficher() {
 		
 		System.out.println("Alphabet: "+ super.getX());
+		System.out.println("Etats: "+super.getEtats());
 		System.out.println("Etat initial: "+ super.getEtatInit());
 		System.out.println("Etats finaux: "+ super.getEtatFin());
 		System.out.println("Transitions: ");

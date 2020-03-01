@@ -7,8 +7,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		int i,j;
-		char car;
+		String car;
 		HashMap<Integer, HashSet<Transition>> transitions = new HashMap<Integer, HashSet<Transition>>();
+		HashSet<Integer> etats = new HashSet<Integer>();
 		HashSet<String> alpha = new HashSet<String>();
 		System.out.println("Alphabet :");
 		Scanner sc = new Scanner(System.in);
@@ -25,12 +26,13 @@ public class Main {
 		sc = new Scanner(System.in);
 		String instruction = sc.nextLine();
 		Character c;
+		String[] str;
 		while(!instruction.equals("OK")) { // Pareil on s'arrete a OK
-			c = instruction.charAt(2);
-			if(alpha.contains(c.toString())) { // On verifie si la lettre en entree appartient a l'alphabet
-				i = instruction.charAt(0) - 48;  // On soustrait le code ASCII de 0 pour tomber sur le bon entier
-				j = instruction.charAt(4) - 48;	// Pour se placer a l'etat suivant on doit passer 2 caracteres et deux blancs de la chaine en entree
-				car = instruction.charAt(2);
+			str = instruction.split(" ");
+			if(alpha.contains(str[1])) { // On verifie si la lettre en entree appartient a l'alphabet
+				i = Integer.parseInt(str[0]);  // On soustrait le code ASCII de 0 pour tomber sur le bon entier
+				j = Integer.parseInt(str[2]);	// Pour se placer a l'etat suivant on doit passer 2 caracteres et deux blancs de la chaine en entree
+				car = str[1];
 				if(transitions.containsKey(i)) { // Si l'etat de depart existe deja alors ajouter une transition
 					transition = transitions.get(i);
 					transition.add(new Transition(car, j)); 
@@ -41,6 +43,8 @@ public class Main {
 					transition.add(new Transition(car, j));
 					transitions.put(i, transition);
 				}
+				etats.add(i); 
+				etats.add(j);
 			}
 			else System.out.println("Cette lettre n'appartient pas a l'alphabet. Veuillez reessayer ");
 			sc = new Scanner(System.in);
@@ -50,17 +54,19 @@ public class Main {
 		System.out.println("Etat initial :");
 		sc = new Scanner(System.in);
 		int etInit = sc.nextInt();
+		etats.add(etInit);
 		HashSet<Integer> etatFin = new HashSet<Integer>();
 		System.out.println("Etats finaux :");
 		sc = new Scanner(System.in);
 		alp = sc.next();
 		while(!alp.equals("OK")) {
 			etatFin.add(Integer.parseInt(alp));
+			etats.add(Integer.parseInt(alp));
 			sc = new Scanner(System.in);
 			alp = sc.next();
 		}
 		
-		Automate_simple A = new Automate_simple(X, transitions, etInit, etatFin);
+		Automate_simple A = new Automate_simple(X, etats, transitions, etInit, etatFin);
 		A.afficher();
 		Automate_simple B = A.reduire();
 		B.afficher();
