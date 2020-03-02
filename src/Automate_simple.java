@@ -63,25 +63,27 @@ public class Automate_simple extends Automate {
 		}
 	}
 	
+	
 	public Automate_simple reduire()
 	{
 		HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
 		HashSet<Integer> nvEtats = new HashSet<Integer> ();
-		nvEtats.addAll(super.getEtats());
+		HashSet<Integer> nvEtatFin = new HashSet<Integer>();	//	Nouveaux etats finaux
 		 if(coaccessible(super.getEtatInit())) {
+			 nvEtats.addAll(super.getEtats());
 			int etat, suiv;
 			Iterator<Transition> it;
 			Transition t;
-			nvTrans.putAll(transitions);
+			nvTrans.putAll(transitions);	// On copie les transitions de l'automate d'origine dans une nouvelle variable nvTrans
 			for(Map.Entry<Integer, HashSet<Transition>> entry : transitions.entrySet()) {
-				etat = (int) entry.getKey();
+				etat = (int) entry.getKey(); 	// Pour chaque clé on vérifie si l'etat est accessible et coaccessible...
 				if(!accessible(etat) || !coaccessible(etat)) {
-					nvTrans.remove(etat);
-					if(nvEtats.contains(etat)) nvEtats.remove(etat);
+					nvTrans.remove(etat);			// Si c'est pas le cas, on supprime toute l'etree correspondante dans nvTrans
+					if(nvEtats.contains(etat)) nvEtats.remove(etat);	// Ainsi que de l'ensemble d'etats nvEtats
 				}
-				else {
+				else {			// Sinon, on parcourt toutes les transitions et on enleve verifie l'accessibilté et la coacc de chaque etat
 					it = ((HashSet<Transition>) transitions.get(etat)).iterator();
-					while(it.hasNext()) {
+					while(it.hasNext()) {			
 						t = it.next();
 						suiv = t.getEtatSuivant();
 						if(!accessible(suiv) || !coaccessible(suiv)) {
@@ -90,11 +92,18 @@ public class Automate_simple extends Automate {
 						}
 					}
 				}
-			}			
+			}	
+			 HashSet<Integer> etatFin = super.getEtatFin();
+			 Iterator<Integer> itint = etatFin.iterator();	// On parcourrt l'ancien ensemble etatFin et on garde ceux qui sont dans nvEtats
+			 int etFin;	
+			 while(itint.hasNext()) {
+				 etFin = itint.next();
+				 if(nvEtats.contains(etFin)) nvEtatFin.add(etFin);
+			 }
 
 		}
-		 //Modification des etats finaux...
-		return new Automate_simple(super.getX(), nvEtats, nvTrans, super.getEtatInit(), super.getEtatFin());
+
+		return new Automate_simple(super.getX(), nvEtats, nvTrans, super.getEtatInit(), nvEtatFin);
 	}
 /*public Automate_simple deterministe()
 {
