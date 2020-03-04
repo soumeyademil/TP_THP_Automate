@@ -115,12 +115,51 @@ public Automate complément(Automate_simple A)
 	return A;
 	
 }
-public Automate_simple miroir(Automate_simple A)
-{
-	return A;
+*/
+public Automate_simple miroir()
+{	
+	HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
+	int etatOrigin, etatTrans;
+	Iterator<Transition> it;
+	String lettre;
+	Transition tr;
+	for(Map.Entry<Integer, HashSet<Transition>> entry : transitions.entrySet()) {
+		etatOrigin = entry.getKey();
+		it = entry.getValue().iterator();
+		while(it.hasNext()) {
+			tr = it.next();
+			lettre = tr.getLettre();
+			etatTrans = tr.getEtatSuivant();
+			if(nvTrans.containsKey(etatTrans)) nvTrans.get(etatTrans).add(new Transition(lettre, etatOrigin));
+			else {
+				nvTrans.put(etatTrans, new HashSet<Transition> ());
+				nvTrans.get(etatTrans).add(new Transition(lettre, etatOrigin));
+			}
+		}
+		
+	}
+	//Modification etat initial et etats finaux......
+	HashSet<Integer> nvEtatFin = new HashSet<Integer>();
+	nvEtatFin.add(super.getEtatInit());			// L'ensemble des nouveaux etats finaux contient l'ancien etat initial
+	int nvEtatInit = 0;							// Nouvel etat initial
+	HashSet<Transition> transEtatInit = new HashSet<Transition>();	// Transition du nouvel etat initial
+	HashSet<Integer> EtatFin = super.getEtatFin();
+	Iterator<Integer> itInt = EtatFin.iterator();
+	int etatActu;
+	while(itInt.hasNext()) {
+		etatActu = itInt.next();		// On parcourt le Set des anciens etats finaux pour copier leurs transitions dans le nouvel etat init 
+		if(nvTrans.containsKey(etatActu)) transEtatInit.addAll(nvTrans.get(etatActu));
+		nvEtatInit = Integer.parseInt(((Integer)nvEtatInit).toString() + ((Integer)etatActu).toString());		
+	}
+	nvTrans.put(nvEtatInit, transEtatInit);		// On ajoute les transitions du nouvel etat 
+	HashSet<Integer> nvEtats = new HashSet<Integer>();	//	On ajoute aussi nv ETAT init au Set d'etats
+	nvEtats.addAll(super.getEtats());
+	nvEtats.add(nvEtatInit);
+	
+	return new Automate_simple(super.getX(), nvEtats, nvTrans, nvEtatInit, nvEtatFin);		// Et enfin on retourne le miroir
 	
 }
-public boolean reconnaissance(Automate_simple A,mots mot)
+/*public boolean reconnaissance(Automate_simple A,mots mot)
 {
 	
 } */
