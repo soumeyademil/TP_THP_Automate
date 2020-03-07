@@ -1,5 +1,7 @@
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 public abstract class Util {
@@ -68,5 +70,6 @@ public abstract class Util {
 		return new Automate_simple(X, etats, transitions, etInit, etatFin);
 		
 	}
-
+	
 }
+

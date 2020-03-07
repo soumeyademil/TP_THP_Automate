@@ -12,9 +12,6 @@ public class Main {
 		Automate_simple B = A.reduire();
 		System.out.println("----------- B --------------");
 		B.afficher();
-		Automate_simple C = B.miroir();
-		System.out.println("----------- C --------------");
-		C.afficher();
 	}
 	
 
