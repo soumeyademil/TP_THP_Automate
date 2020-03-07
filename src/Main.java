@@ -12,6 +12,10 @@ public class Main {
 		Automate_simple B = A.reduire();
 		System.out.println("----------- B --------------");
 		B.afficher();
+		Scanner sc = new Scanner(System.in);
+		boolean result = B.reconnaissance(sc.next());
+		System.out.println(result);
+		
 	}
 	
 

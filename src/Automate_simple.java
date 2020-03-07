@@ -159,23 +159,23 @@ public boolean reconnaissance(String mot) {
 	int etatActu = super.getEtatInit(), i = 0, length = mot.length();
 	Transition transEtat = new Transition();
 	Iterator<Transition> it;
-	boolean seDeplacer;
+	boolean changerEt;
 	boolean bloque = false; // On le met a faux si on ne trouve plus de transitions au milieu du mot
-	while(i < length) {
+	while(i < length && !bloque) {	// On consomme le mot tant qu'il existe un chemin non bloque
 		it = transitions.get(etatActu).iterator();
-		seDeplacer = false;
-		while(it.hasNext() && !seDeplacer) {	// On parcourt toutes les transitions de l'etat actuel
+		changerEt = false;
+		while(it.hasNext() && !changerEt) {	// On parcourt toutes les transitions de l'etat actuel
 			transEtat = it.next();
-			if(transEtat.getLettre() == ((Character)mot.charAt(i)).toString()) { // S'il existe une transition avec ce caractere
+			if(transEtat.getLettre().equals(((Character)mot.charAt(i)).toString())) { // S'il existe une transition avec ce caractere
 				etatActu = transEtat.getEtatSuivant();						// Alors se deplacer a l'etat suivant
-				seDeplacer = true;			// On a changé d'etat...
+				changerEt = true;			// On a changé d'etat...
+				System.out.println(((Character)mot.charAt(i)).toString());
 			}	
 		}
-		if(!seDeplacer) bloque = true;
-		
+		if(!changerEt) bloque = true;		// Si on a pas change d'etat alors chemin bloque
 		i++;		
 	}
-	if(super.getEtatFin().contains(etatActu)) return true;	// Si l'etat obtenu a la fin de la lecture du mot est un etat FINAL
+	if(!bloque && super.getEtatFin().contains(etatActu)) return true;	// Si l'etat obtenu a la fin de la lecture du mot est un etat FINAL
 	else return false;				// Sinon ...
 } 
 
