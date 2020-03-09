@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class  Automate {
+public abstract class  Automate implements Serializable{
 	
    private Alphabet X;
    private int etatInit;

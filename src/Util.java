@@ -1,3 +1,11 @@
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -6,7 +14,11 @@ import java.util.Scanner;
 
 public abstract class Util {
 	
-	public static Automate creer() {
+	/**
+	 * Cette methode permet de creer un automate simple
+	 * @return	
+	 */
+	public static Automate_simple creer() {
 		int i,j;
 		String car;
 		HashMap<Integer, HashSet<Transition>> transitions = new HashMap<Integer, HashSet<Transition>>();
@@ -70,6 +82,56 @@ public abstract class Util {
 		return new Automate_simple(X, etats, transitions, etInit, etatFin);
 		
 	}
+	
+	
+	/**
+	 * Cette methode permet de serialiser un automate
+	 * @param A
+	 */
+	public static void sauvegarder(Automate A, String nom) {
+		ObjectOutputStream oos;
+		String nomFichier = nom + ".bin";
+		try {
+			oos = new ObjectOutputStream(
+					new BufferedOutputStream(
+							new FileOutputStream(
+									new File(nomFichier))));
+			oos.writeObject(A);
+			oos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+
+	}
+	
+	/**
+	 * Cette methode permet de recuperer un automate deja sauvegarde, pour le modifier
+	 * @param nom
+	 * @return
+	 * @throws ClassNotFoundException
+	 */
+	public static Automate recuperer(String nom) throws ClassNotFoundException {
+		ObjectInputStream ois;
+		Automate_simple C = null;
+		String nomFichier = nom + ".bin";
+		try {
+			ois = new ObjectInputStream(
+					new BufferedInputStream(
+							new FileInputStream(
+									new File(nomFichier))));
+			C = (Automate_simple) ois.readObject();
+			C.afficher();
+			ois.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return C;
+	}
+	
+	
+	
 	
 }
 

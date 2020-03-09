@@ -1,14 +1,23 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Automate_simple extends Automate {
+public class Automate_simple extends Automate implements Serializable{
 	
 	private HashMap<Integer, HashSet<Transition>> transitions = new HashMap<Integer, HashSet<Transition>>();
 	private boolean deterministe;
 
+	/**
+	 * Constructeur par default
+	 * @param X
+	 * @param etats
+	 * @param transitions
+	 * @param etatInit
+	 * @param etatFin
+	 */
 	public Automate_simple(Alphabet X,HashSet<Integer> etats, HashMap<Integer, HashSet<Transition>> transitions , int etatInit, HashSet<Integer> etatFin)
 	{
 		   super.setX(X);
@@ -19,6 +28,10 @@ public class Automate_simple extends Automate {
 		   this.deterministe = false;
 	}
 	
+	/**
+	 * Reduit un automate simple
+	 * @return
+	 */
 	public Automate_simple reduire()
 	{
 		HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
@@ -29,13 +42,13 @@ public class Automate_simple extends Automate {
 		HashSet<Transition> transit = new HashSet<Transition>();
 		Iterator<Transition> it;
 		Transition transSuiv = new Transition();
-		access.add(super.getEtatInit());
+		access.add(super.getEtatInit());				// L etat initial est le premier etat accessible
 		int i = 0;
-		while(i < access.size()) {
-			if(transitions.containsKey(access.get(i))) {
+		while(i < access.size()) {						// On parcours la liste dynamique des etats accessibles
+			if(transitions.containsKey(access.get(i))) {	
 				transit = transitions.get(access.get(i));
 				it = transit.iterator();
-				while(it.hasNext()) {
+				while(it.hasNext()) {				// Pour chacun d'eux on recupere les etats successeurs
 					transSuiv = it.next();
 					if(!access.contains(transSuiv.getEtatSuivant())) {
 						access.add(transSuiv.getEtatSuivant());
@@ -47,18 +60,18 @@ public class Automate_simple extends Automate {
 		//On remplit coAccess avec les etats finaux...
 		Iterator<Integer> itInt = super.getEtatFin().iterator();
 		int etat;
-		while(itInt.hasNext()) {
+		while(itInt.hasNext()) {		// Les etats finaux sont coaccessibles, donc on initialise la liste coaccessible avec
 			etat = itInt.next();
 			coAccess.add(etat);
 		}
 		Transition t = new Transition();
 		int j = 0;
 		boolean appartient;
-		while(j < coAccess.size()) {
+		while(j < coAccess.size()) {		// On parcours cette liste qui change au fur et a mesure
 			for(Map.Entry entry : this.transitions.entrySet()) {
 				it = ((HashSet<Transition>) entry.getValue()).iterator();
 				appartient = false;
-				while(it.hasNext() && !appartient) {
+				while(it.hasNext() && !appartient) {		// Pour chaque etat coaccessible, on recupere les predecesseur
 					t = it.next();
 					if(t.getEtatSuivant() == coAccess.get(j)) {
 						if(!coAccess.contains((Integer)entry.getKey())) coAccess.add((Integer)entry.getKey());
@@ -72,13 +85,13 @@ public class Automate_simple extends Automate {
 		Transition tr = new Transition();
 		Iterator<Transition> itt;
 		HashSet<Transition> trans;
-		for(Map.Entry entry : this.transitions.entrySet()) {
+		for(Map.Entry entry : this.transitions.entrySet()) { // On remplit le Map des nouvelles transitions
 			etatActu = (Integer)entry.getKey();
-			if(coAccess.contains(etatActu) && access.contains(etatActu)) {
+			if(coAccess.contains(etatActu) && access.contains(etatActu)) {// Pour chaque etat des anciens on verifie s'il est accessible et coaccessible
 				nvEtats.add(etatActu);
 				trans = new HashSet<Transition>();
 				it = ((HashSet<Transition>)entry.getValue()).iterator();
-				while(it.hasNext()) {
+				while(it.hasNext()) {					// Pareil pour ces successeurs
 					tr = it.next();
 					if(coAccess.contains(tr.getEtatSuivant()) && access.contains(tr.getEtatSuivant())) {
 						nvEtats.add(tr.getEtatSuivant());
@@ -91,7 +104,7 @@ public class Automate_simple extends Automate {
 		
 		itInt = super.getEtatFin().iterator();
 		int etFin;
-		while(itInt.hasNext()) {
+		while(itInt.hasNext()) {		// Les nouveaux etats finaux
 			etFin = itInt.next();
 			if(access.contains(etFin)) nvEtatFin.add(etFin);
 		}
@@ -111,6 +124,10 @@ public Automate complément(Automate_simple A)
 	
 }
 
+  /**
+   * Retourne le miroir d'un automate simple
+ * @return
+ */
 public Automate_simple miroir() {	
 	HashMap<Integer, HashSet<Transition>> nvTrans = new HashMap<Integer, HashSet<Transition>>();
 	int etatOrigin, etatTrans;
@@ -119,7 +136,7 @@ public Automate_simple miroir() {
 	Transition tr;
 	for(Map.Entry<Integer, HashSet<Transition>> entry : transitions.entrySet()) {
 		etatOrigin = entry.getKey();
-		it = entry.getValue().iterator();
+		it = entry.getValue().iterator();	// On inverse les transitions
 		while(it.hasNext()) {
 			tr = it.next();
 			lettre = tr.getLettre();
@@ -169,7 +186,6 @@ public boolean reconnaissance(String mot) {
 			if(transEtat.getLettre().equals(((Character)mot.charAt(i)).toString())) { // S'il existe une transition avec ce caractere
 				etatActu = transEtat.getEtatSuivant();						// Alors se deplacer a l'etat suivant
 				changerEt = true;			// On a changé d'etat...
-				System.out.println(((Character)mot.charAt(i)).toString());
 			}	
 		}
 		if(!changerEt) bloque = true;		// Si on a pas change d'etat alors chemin bloque
@@ -178,10 +194,6 @@ public boolean reconnaissance(String mot) {
 	if(!bloque && super.getEtatFin().contains(etatActu)) return true;	// Si l'etat obtenu a la fin de la lecture du mot est un etat FINAL
 	else return false;				// Sinon ...
 } 
-
-	public void ajouterTransition() {
-		
-	}
 
 	public HashMap<Integer, HashSet<Transition>> getTransitions() {
 			return transitions;

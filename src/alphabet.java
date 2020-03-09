@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class Alphabet {
+public class Alphabet implements Serializable{
 	private HashSet<String> alpha = new HashSet<String>();// tableau de lettre de X
 	
 	public Alphabet(HashSet<String> alpha)
